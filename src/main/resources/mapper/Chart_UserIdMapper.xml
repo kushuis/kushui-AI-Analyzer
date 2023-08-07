@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.springbootinit.mapper.Chart_UserIdMapper">
+
+   <select id="isExitsChart_UserId" parameterType="long" resultType="Integer">
+       select count(*) from information_schema.tables where table_schema='kushui_bi' and table_name =#{userId};
+   </select>
+
+
+    <update id="createChart_UserId" parameterType="string" >
+        ${createSql}
+    </update>
+    
+    
+    <insert id="insertChartData" >
+        insert into chart_#{userId} values(#{chartUserId.id},#{chartUserId.chartData})
+    </insert>
+</mapper>
