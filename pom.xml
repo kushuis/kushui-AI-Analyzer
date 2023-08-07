@@ -172,11 +172,11 @@
             <version>1.2.76</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.12</artifactId>
-            <version>3.1.2</version> <!-- 根据您的需求选择版本 -->
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.spark</groupId>-->
+<!--            <artifactId>spark-core_2.12</artifactId>-->
+<!--            <version>3.1.2</version> &lt;!&ndash; 根据您的需求选择版本 &ndash;&gt;-->
+<!--        </dependency>-->
 
     </dependencies>
 
