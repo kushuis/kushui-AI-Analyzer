@@ -39,21 +39,23 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart>
 
     @Override
     public void genChartByAiAsync(Chart chart,StringBuilder userInput) {
+
+        // 定义任务重试器
+        Retryer<Boolean> retryer = RetryerBuilder.<Boolean>newBuilder()
+                .retryIfResult(Predicates.<Boolean>isNull()) // 如果结果为空则重试
+                .retryIfResult(Predicates.equalTo(false))//结果为false时重试
+                .retryIfExceptionOfType(IOException.class) // 发生IO异常则重试
+                .retryIfRuntimeException() // 发生运行时异常则重试
+                //重试后，出现异常待5s后重试，再出现异常，等待10s后重试
+                .withWaitStrategy(WaitStrategies.incrementingWait(5, TimeUnit.SECONDS, 5, TimeUnit.SECONDS)) // 等待
+                .withStopStrategy(StopStrategies.stopAfterAttempt(3)) // 允许执行4次（首次执行 + 最多重试3次）
+                .withRetryListener(new MyRetryListener())
+                .build();
+
         // todo 建议处理任务队列满了后，抛异常的情况
         //该异步线程不返回值，而是不断改变chart状态，并将最终结果保存到数据库
         CompletableFuture.runAsync(() -> {
 
-            // 定义任务重试器
-            Retryer<Boolean> retryer = RetryerBuilder.<Boolean>newBuilder()
-                    .retryIfResult(Predicates.<Boolean>isNull()) // 如果结果为空则重试
-                    .retryIfResult(Predicates.equalTo(false))//结果为false时重试
-                    .retryIfExceptionOfType(IOException.class) // 发生IO异常则重试
-                    .retryIfRuntimeException() // 发生运行时异常则重试
-                    //重试后，出现异常待5s后重试，再出现异常，等待10s后重试
-                    .withWaitStrategy(WaitStrategies.incrementingWait(5, TimeUnit.SECONDS, 5, TimeUnit.SECONDS)) // 等待
-                    .withStopStrategy(StopStrategies.stopAfterAttempt(3)) // 允许执行4次（首次执行 + 最多重试3次）
-                    .withRetryListener(new MyRetryListener())
-                    .build();
 
             // 先修改图表任务状态为 “执行中”。等执行成功后，修改为 “已完成”、保存执行结果；执行失败后，状态修改为 “失败”，记录任务失败信息。
             Chart updateChart = new Chart();

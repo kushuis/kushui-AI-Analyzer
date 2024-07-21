@@ -106,8 +106,8 @@ public class BiMessageConsumer {
             handleChartUpdateError(chart.getId(), "更新图表成功状态失败");
         }
         // 消息确认
-      //  channel.basicAck(deliveryTag, false);
-        channel.basicNack(deliveryTag, false, false);
+        channel.basicAck(deliveryTag, false);
+//        channel.basicNack(deliveryTag, false, false);
     }
 
     /**
